@@ -115,7 +115,51 @@ def thomson_points(k: int) -> np.ndarray:
                for a in [0, math.pi/2, math.pi, 3*math.pi/2]]
         raw = np.array(top + bot, dtype=float)
         return raw / np.linalg.norm(raw[0])
-    raise ValueError(f"k={k} not implemented")
+    # For k > 8: solve the Thomson problem numerically.
+    # Place k points on a unit sphere and minimize sum 1/|pi - pj|
+    # using spherical coordinates (theta, phi) per point.
+    return _solve_thomson(k)
+
+
+def _solve_thomson(k: int, n_restarts: int = 5) -> np.ndarray:
+    """Numerically solve the Thomson problem for k points on a unit sphere."""
+    from scipy.optimize import minimize as sp_minimize
+
+    def _to_xyz(angles: np.ndarray) -> np.ndarray:
+        pts = np.zeros((k, 3))
+        for i in range(k):
+            th = angles[2 * i]
+            ph = angles[2 * i + 1]
+            pts[i] = [math.sin(th) * math.cos(ph),
+                      math.sin(th) * math.sin(ph),
+                      math.cos(th)]
+        return pts
+
+    def _energy(angles: np.ndarray) -> float:
+        pts = _to_xyz(angles)
+        E = 0.0
+        for i in range(k):
+            for j in range(i + 1, k):
+                d = np.linalg.norm(pts[i] - pts[j])
+                if d < 1e-10:
+                    return 1e12
+                E += 1.0 / d
+        return E
+
+    best_E = 1e12
+    best_pts = None
+    rng = np.random.RandomState(42)
+    for _ in range(n_restarts):
+        a0 = np.zeros(2 * k)
+        for i in range(k):
+            a0[2 * i] = np.arccos(2 * rng.random() - 1)     # theta uniform on sphere
+            a0[2 * i + 1] = 2 * math.pi * rng.random()       # phi
+        res = sp_minimize(_energy, a0, method="L-BFGS-B",
+                          options={"maxiter": 5000, "ftol": 1e-14})
+        if res.fun < best_E:
+            best_E = res.fun
+            best_pts = _to_xyz(res.x)
+    return best_pts
 
 
 def repulsion_sum(k: int) -> float:
