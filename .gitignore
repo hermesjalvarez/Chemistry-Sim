@@ -1,0 +1,9 @@
+node_modules/
+uploads/*
+!uploads/.gitkeep
+!uploads/intro
+uploads/intro/*
+!uploads/intro/.gitkeep
+data/*.json
+*.log
+.env
