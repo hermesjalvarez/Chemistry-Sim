@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Element Blitz — Chemistry Sim</title>
+<style>
+  :root{
+    --bg1:#0b1026;
+    --bg2:#151b3d;
+    --accent:#42e2b8;
+    --accent2:#7c8cff;
+    --danger:#ff5d7a;
+    --card:#1c2350;
+    --text:#eef1ff;
+    --muted:#9aa3d1;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    background:radial-gradient(circle at 20% 20%, var(--bg2), var(--bg1) 70%);
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:20px;
+    overflow-x:hidden;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:640px;
+  }
+
+  header{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  header h1{
+    margin:0;
+    font-size:2rem;
+    letter-spacing:1px;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{
+    margin:6px 0 0;
+    color:var(--muted);
+    font-size:0.95rem;
+  }
+
+  .panel{
+    background:var(--card);
+    border-radius:18px;
+    padding:24px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.4);
+    border:1px solid rgba(255,255,255,0.06);
+  }
+
+  .stats{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:18px;
+    gap:10px;
+  }
+  .stat{
+    flex:1;
+    text-align:center;
+    background:rgba(255,255,255,0.03);
+    border-radius:12px;
+    padding:10px 6px;
+  }
+  .stat .label{
+    font-size:0.7rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--muted);
+  }
+  .stat .value{
+    font-size:1.4rem;
+    font-weight:700;
+    margin-top:2px;
+  }
+
+  #timerBarOuter{
+    height:8px;
+    border-radius:6px;
+    background:rgba(255,255,255,0.08);
+    overflow:hidden;
+    margin-bottom:22px;
+  }
+  #timerBar{
+    height:100%;
+    width:100%;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    transition:width 0.1s linear, background 0.3s;
+  }
+
+  .question-card{
+    text-align:center;
+    margin-bottom:24px;
+  }
+  .question-card .kicker{
+    color:var(--muted);
+    font-size:0.85rem;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    margin-bottom:8px;
+  }
+  #elementName{
+    font-size:2.4rem;
+    font-weight:800;
+    min-height:56px;
+  }
+
+  .options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .opt-btn{
+    background:rgba(255,255,255,0.04);
+    border:2px solid rgba(255,255,255,0.08);
+    color:var(--text);
+    font-size:1.3rem;
+    font-weight:700;
+    padding:16px 8px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:transform 0.12s, border-color 0.15s, background 0.15s;
+  }
+  .opt-btn:hover{
+    transform:translateY(-2px);
+    border-color:var(--accent2);
+  }
+  .opt-btn.correct{
+    background:rgba(66,226,184,0.18);
+    border-color:var(--accent);
+  }
+  .opt-btn.wrong{
+    background:rgba(255,93,122,0.18);
+    border-color:var(--danger);
+  }
+  .opt-btn:disabled{
+    cursor:default;
+    transform:none;
+  }
+
+  #startScreen, #endScreen{
+    text-align:center;
+  }
+  #startScreen p, #endScreen p{
+    color:var(--muted);
+    line-height:1.5;
+  }
+
+  .big-btn{
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    border:none;
+    color:#0b1026;
+    font-weight:800;
+    font-size:1.05rem;
+    padding:14px 28px;
+    border-radius:12px;
+    cursor:pointer;
+    margin-top:14px;
+    transition:transform 0.12s;
+  }
+  .big-btn:hover{ transform:translateY(-2px); }
+
+  .hidden{ display:none !important; }
+
+  #feedback{
+    min-height:22px;
+    font-weight:600;
+    margin-top:6px;
+    text-align:center;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:0.75rem;
+    margin-top:16px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>⚗️ Element Blitz</h1>
+    <p>Match the element to its chemical symbol before the clock runs out.</p>
+  </header>
+
+  <div class="panel">
+
+    <!-- Start Screen -->
+    <div id="startScreen">
+      <p>You'll see an element name and 4 possible symbols. Pick the right one as fast as you can — the quicker you answer, the more points you earn. Miss a symbol or run out of time and your streak resets.</p>
+      <p><strong>Best score: <span id="bestScoreDisplay">0</span></strong></p>
+      <button class="big-btn" id="startBtn">Start Game</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden">
+      <div class="stats">
+        <div class="stat">
+          <div class="label">Score</div>
+          <div class="value" id="scoreValue">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Streak</div>
+          <div class="value" id="streakValue">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Round</div>
+          <div class="value" id="roundValue">1 / 10</div>
+        </div>
+      </div>
+
+      <div id="timerBarOuter"><div id="timerBar"></div></div>
+
+      <div class="question-card">
+        <div class="kicker">Which symbol matches this element?</div>
+        <div id="elementName">—</div>
+      </div>
+
+      <div class="options" id="optionsGrid"></div>
+      <div id="feedback"></div>
+    </div>
+
+    <!-- End Screen -->
+    <div id="endScreen" class="hidden">
+      <h2 id="endTitle">Round Complete!</h2>
+      <p id="endSummary"></p>
+      <button class="big-btn" id="restartBtn">Play Again</button>
+    </div>
+
+  </div>
+
+  <footer>Built for Chemistry-Sim · pure HTML/CSS/JS, no dependencies</footer>
+</div>
+
+<script>
+(function(){
+  const ELEMENTS = [
+    ["Hydrogen","H"],["Helium","He"],["Lithium","Li"],["Beryllium","Be"],
+    ["Boron","B"],["Carbon","C"],["Nitrogen","N"],["Oxygen","O"],
+    ["Fluorine","F"],["Neon","Ne"],["Sodium","Na"],["Magnesium","Mg"],
+    ["Aluminium","Al"],["Silicon","Si"],["Phosphorus","P"],["Sulfur","S"],
+    ["Chlorine","Cl"],["Argon","Ar"],["Potassium","K"],["Calcium","Ca"],
+    ["Iron","Fe"],["Copper","Cu"],["Zinc","Zn"],["Silver","Ag"],
+    ["Tin","Sn"],["Iodine","I"],["Gold","Au"],["Mercury","Hg"],
+    ["Lead","Pb"],["Titanium","Ti"],["Nickel","Ni"],["Manganese","Mn"],
+    ["Chromium","Cr"],["Bromine","Br"],["Xenon","Xe"],["Platinum","Pt"],
+    ["Barium","Ba"],["Cobalt","Co"],["Uranium","U"],["Radon","Rn"]
+  ];
+
+  const TOTAL_ROUNDS = 10;
+  const ROUND_TIME = 6000; // ms
+  const BEST_KEY = "elementBlitzBestScore";
+
+  const startScreen = document.getElementById("startScreen");
+  const gameScreen = document.getElementById("gameScreen");
+  const endScreen = document.getElementById("endScreen");
+  const startBtn = document.getElementById("startBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const scoreValue = document.getElementById("scoreValue");
+  const streakValue = document.getElementById("streakValue");
+  const roundValue = document.getElementById("roundValue");
+  const elementNameEl = document.getElementById("elementName");
+  const optionsGrid = document.getElementById("optionsGrid");
+  const timerBar = document.getElementById("timerBar");
+  const feedback = document.getElementById("feedback");
+  const endTitle = document.getElementById("endTitle");
+  const endSummary = document.getElementById("endSummary");
+  const bestScoreDisplay = document.getElementById("bestScoreDisplay");
+
+  let score = 0;
+  let streak = 0;
+  let round = 0;
+  let deck = [];
+  let timerStart = 0;
+  let timerRAF = null;
+  let locked = false;
+
+  bestScoreDisplay.textContent = localStorage.getItem(BEST_KEY) || 0;
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  function buildDeck(){
+    deck = shuffle(ELEMENTS).slice(0, TOTAL_ROUNDS);
+  }
+
+  function buildOptions(correct){
+    const others = shuffle(ELEMENTS.filter(e => e[1] !== correct[1])).slice(0,3);
+    return shuffle([correct, ...others]);
+  }
+
+  function startGame(){
+    score = 0; streak = 0; round = 0;
+    buildDeck();
+    startScreen.classList.add("hidden");
+    endScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+    updateStats();
+    nextRound();
+  }
+
+  function updateStats(){
+    scoreValue.textContent = score;
+    streakValue.textContent = streak;
+    roundValue.textContent = Math.min(round, TOTAL_ROUNDS) + " / " + TOTAL_ROUNDS;
+  }
+
+  function nextRound(){
+    if(round >= TOTAL_ROUNDS){
+      endGame();
+      return;
+    }
+    locked = false;
+    feedback.textContent = "";
+    const current = deck[round];
+    round++;
+    updateStats();
+
+    elementNameEl.textContent = current[0];
+    const opts = buildOptions(current);
+    optionsGrid.innerHTML = "";
+    opts.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "opt-btn";
+      btn.textContent = opt[1];
+      btn.addEventListener("click", () => handleAnswer(btn, opt[1] === current[1]));
+      optionsGrid.appendChild(btn);
+    });
+
+    runTimer();
+  }
+
+  function runTimer(){
+    cancelAnimationFrame(timerRAF);
+    timerStart = performance.now();
+    timerBar.style.background = "linear-gradient(90deg, var(--accent), var(--accent2))";
+
+    function tick(now){
+      const elapsed = now - timerStart;
+      const remaining = Math.max(0, ROUND_TIME - elapsed);
+      const pct = (remaining / ROUND_TIME) * 100;
+      timerBar.style.width = pct + "%";
+      if(pct < 25){
+        timerBar.style.background = "var(--danger)";
+      }
+      if(remaining <= 0){
+        if(!locked) handleAnswer(null, false, true);
+        return;
+      }
+      timerRAF = requestAnimationFrame(tick);
+    }
+    timerRAF = requestAnimationFrame(tick);
+  }
+
+  function handleAnswer(btn, isCorrect, timedOut){
+    if(locked) return;
+    locked = true;
+    cancelAnimationFrame(timerRAF);
+
+    const elapsed = performance.now() - timerStart;
+    const buttons = optionsGrid.querySelectorAll(".opt-btn");
+    buttons.forEach(b => b.disabled = true);
+
+    const correctIdx = deck[round-1][1];
+    buttons.forEach(b => {
+      if(b.textContent === correctIdx) b.classList.add("correct");
+    });
+
+    if(isCorrect){
+      const timeBonus = Math.max(0, Math.round((1 - elapsed/ROUND_TIME) * 50));
+      streak++;
+      const points = 50 + timeBonus + streak * 5;
+      score += points;
+      feedback.textContent = "Correct! +" + points + " pts (streak x" + streak + ")";
+      feedback.style.color = "var(--accent)";
+    } else {
+      streak = 0;
+      if(btn) btn.classList.add("wrong");
+      feedback.textContent = timedOut ? "Time's up! The answer was " + correctIdx : "Not quite — it was " + correctIdx;
+      feedback.style.color = "var(--danger)";
+    }
+
+    updateStats();
+    setTimeout(nextRound, 900);
+  }
+
+  function endGame(){
+    gameScreen.classList.add("hidden");
+    endScreen.classList.remove("hidden");
+
+    const best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
+    let newBest = false;
+    if(score > best){
+      localStorage.setItem(BEST_KEY, score);
+      newBest = true;
+    }
+    bestScoreDisplay.textContent = localStorage.getItem(BEST_KEY);
+
+    endTitle.textContent = newBest ? "New Best Score!" : "Round Complete!";
+    endSummary.innerHTML = "Final score: <strong>" + score + "</strong><br>Best score: <strong>" + localStorage.getItem(BEST_KEY) + "</strong>";
+  }
+
+  startBtn.addEventListener("click", startGame);
+  restartBtn.addEventListener("click", startGame);
+})();
+</script>
+</body>
+</html>
