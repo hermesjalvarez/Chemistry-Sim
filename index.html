@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Element Blitz — Chemistry Sim</title>
+<title>Hot Dog Hunt — Chemistry Sim</title>
 <style>
   :root{
     --bg1:#0b1026;
@@ -30,15 +30,9 @@
     overflow-x:hidden;
   }
 
-  .wrap{
-    width:100%;
-    max-width:640px;
-  }
+  .wrap{ width:100%; max-width:720px; }
 
-  header{
-    text-align:center;
-    margin-bottom:18px;
-  }
+  header{ text-align:center; margin-bottom:16px; }
   header h1{
     margin:0;
     font-size:2rem;
@@ -48,117 +42,19 @@
     background-clip:text;
     color:transparent;
   }
-  header p{
-    margin:6px 0 0;
-    color:var(--muted);
-    font-size:0.95rem;
-  }
+  header p{ margin:6px 0 0; color:var(--muted); font-size:0.95rem; }
 
   .panel{
     background:var(--card);
     border-radius:18px;
-    padding:24px;
+    padding:20px;
     box-shadow:0 20px 50px rgba(0,0,0,0.4);
     border:1px solid rgba(255,255,255,0.06);
   }
 
-  .stats{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:18px;
-    gap:10px;
-  }
-  .stat{
-    flex:1;
-    text-align:center;
-    background:rgba(255,255,255,0.03);
-    border-radius:12px;
-    padding:10px 6px;
-  }
-  .stat .label{
-    font-size:0.7rem;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    color:var(--muted);
-  }
-  .stat .value{
-    font-size:1.4rem;
-    font-weight:700;
-    margin-top:2px;
-  }
-
-  #timerBarOuter{
-    height:8px;
-    border-radius:6px;
-    background:rgba(255,255,255,0.08);
-    overflow:hidden;
-    margin-bottom:22px;
-  }
-  #timerBar{
-    height:100%;
-    width:100%;
-    background:linear-gradient(90deg, var(--accent), var(--accent2));
-    transition:width 0.1s linear, background 0.3s;
-  }
-
-  .question-card{
-    text-align:center;
-    margin-bottom:24px;
-  }
-  .question-card .kicker{
-    color:var(--muted);
-    font-size:0.85rem;
-    text-transform:uppercase;
-    letter-spacing:2px;
-    margin-bottom:8px;
-  }
-  #elementName{
-    font-size:2.4rem;
-    font-weight:800;
-    min-height:56px;
-  }
-
-  .options{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-  }
-  .opt-btn{
-    background:rgba(255,255,255,0.04);
-    border:2px solid rgba(255,255,255,0.08);
-    color:var(--text);
-    font-size:1.3rem;
-    font-weight:700;
-    padding:16px 8px;
-    border-radius:12px;
-    cursor:pointer;
-    transition:transform 0.12s, border-color 0.15s, background 0.15s;
-  }
-  .opt-btn:hover{
-    transform:translateY(-2px);
-    border-color:var(--accent2);
-  }
-  .opt-btn.correct{
-    background:rgba(66,226,184,0.18);
-    border-color:var(--accent);
-  }
-  .opt-btn.wrong{
-    background:rgba(255,93,122,0.18);
-    border-color:var(--danger);
-  }
-  .opt-btn:disabled{
-    cursor:default;
-    transform:none;
-  }
-
-  #startScreen, #endScreen{
-    text-align:center;
-  }
-  #startScreen p, #endScreen p{
-    color:var(--muted);
-    line-height:1.5;
-  }
-
+  /* ---------- Start / End screens ---------- */
+  #startScreen, #endScreen{ text-align:center; }
+  #startScreen p, #endScreen p{ color:var(--muted); line-height:1.55; }
   .big-btn{
     background:linear-gradient(90deg, var(--accent), var(--accent2));
     border:none;
@@ -168,42 +64,263 @@
     padding:14px 28px;
     border-radius:12px;
     cursor:pointer;
-    margin-top:14px;
+    margin-top:10px;
     transition:transform 0.12s;
   }
   .big-btn:hover{ transform:translateY(-2px); }
-
   .hidden{ display:none !important; }
 
-  #feedback{
-    min-height:22px;
-    font-weight:600;
-    margin-top:6px;
-    text-align:center;
+  /* ---------- HUD ---------- */
+  .stats{ display:flex; justify-content:space-between; margin-bottom:12px; gap:10px; }
+  .stat{ flex:1; text-align:center; background:rgba(255,255,255,0.03); border-radius:12px; padding:8px 6px; }
+  .stat .label{ font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
+  .stat .value{ font-size:1.3rem; font-weight:700; margin-top:2px; }
+  #ammoDots{ letter-spacing:4px; font-size:1.1rem; }
+  #ammoDots .spent{ color:rgba(255,255,255,0.15); }
+
+  /* ---------- Game field ---------- */
+  #field{
+    position:relative;
+    width:100%;
+    height:440px;
+    border-radius:14px;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 85% 12%, #fff6c8 0%, #ffe27a 8%, rgba(255,226,122,0) 9%),
+      linear-gradient(to bottom, #79c9ff 0%, #bfe9ff 55%, #d9f4ff 75%, #d9f4ff 100%);
+    cursor:none;
+    border:2px solid rgba(255,255,255,0.15);
   }
 
-  footer{
-    text-align:center;
-    color:var(--muted);
-    font-size:0.75rem;
-    margin-top:16px;
+  .cloud{
+    position:absolute;
+    background:#fff;
+    border-radius:50px;
+    opacity:0.9;
+    filter:blur(0.3px);
   }
+  .cloud::before, .cloud::after{
+    content:"";
+    position:absolute;
+    background:#fff;
+    border-radius:50%;
+  }
+  #cloud1{ width:70px; height:24px; top:14%; left:10%; animation:drift 26s linear infinite; }
+  #cloud1::before{ width:36px; height:36px; top:-16px; left:8px; }
+  #cloud1::after{ width:26px; height:26px; top:-10px; left:36px; }
+  #cloud2{ width:56px; height:20px; top:30%; left:55%; animation:drift 34s linear infinite; }
+  #cloud2::before{ width:28px; height:28px; top:-12px; left:6px; }
+  #cloud2::after{ width:20px; height:20px; top:-8px; left:28px; }
+  @keyframes drift{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(60px); }
+  }
+
+  #grass{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:22%;
+    background:linear-gradient(to bottom, #5fbf5a, #3f9e42 60%, #2f7f34);
+    box-shadow: inset 0 8px 0 rgba(255,255,255,0.15);
+  }
+  #grass::before{
+    content:"";
+    position:absolute;
+    top:-10px; left:0; right:0; height:12px;
+    background-image: repeating-linear-gradient(115deg, #3f9e42 0 6px, transparent 6px 12px);
+    background-color:#5fbf5a;
+    clip-path: polygon(0 100%, 0 40%, 5% 0, 10% 40%, 15% 0, 20% 40%, 25% 0, 30% 40%, 35% 0, 40% 40%, 45% 0, 50% 40%, 55% 0, 60% 40%, 65% 0, 70% 40%, 75% 0, 80% 40%, 85% 0, 90% 40%, 95% 0, 100% 40%, 100% 100%);
+  }
+
+  /* ---------- Dog ---------- */
+  #dogArea{
+    position:absolute;
+    bottom:6%;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    z-index:5;
+  }
+  #dog{
+    font-size:52px;
+    line-height:1;
+    display:inline-block;
+    transform-origin:center bottom;
+    animation:bob 1.6s ease-in-out infinite;
+    filter:drop-shadow(0 6px 4px rgba(0,0,0,0.25));
+  }
+  @keyframes bob{
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(-4px) rotate(-2deg); }
+  }
+  #dog.catch{ animation:catchPop 0.6s ease; }
+  @keyframes catchPop{
+    0%{ transform:scale(1) rotate(0); }
+    30%{ transform:scale(1.35) rotate(-8deg); }
+    60%{ transform:scale(1.15) rotate(6deg); }
+    100%{ transform:scale(1) rotate(0); }
+  }
+  #dog.laugh{ animation:laughShake 0.6s ease; }
+  @keyframes laughShake{
+    0%,100%{ transform:rotate(0deg); }
+    20%{ transform:rotate(-12deg) translateY(-2px); }
+    40%{ transform:rotate(10deg) translateY(-2px); }
+    60%{ transform:rotate(-8deg); }
+    80%{ transform:rotate(6deg); }
+  }
+
+  #bubble{
+    position:absolute;
+    bottom:100%;
+    margin-bottom:8px;
+    background:#fff;
+    color:#1c2350;
+    font-weight:800;
+    font-size:0.85rem;
+    padding:6px 12px;
+    border-radius:14px;
+    white-space:nowrap;
+    opacity:0;
+    transform:translateY(6px) scale(0.9);
+    transition:opacity 0.2s, transform 0.2s;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  }
+  #bubble::after{
+    content:"";
+    position:absolute;
+    top:100%; left:50%;
+    transform:translateX(-50%);
+    border:6px solid transparent;
+    border-top-color:#fff;
+  }
+  #bubble.show{ opacity:1; transform:translateY(0) scale(1); }
+
+  /* ---------- Targets (flying hot dogs) ---------- */
+  .target{
+    position:absolute;
+    width:56px; height:56px;
+    left:0; bottom:-12%;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.7rem;
+    color:#0b1026;
+    z-index:4;
+    animation-name:flyPath;
+    animation-timing-function:linear;
+    animation-fill-mode:forwards;
+    box-shadow:0 4px 10px rgba(0,0,0,0.25);
+  }
+  .target::after, .target::before{
+    content:"";
+    position:absolute;
+    width:8px; height:20px;
+    background:rgba(255,255,255,0.55);
+    border-radius:50%;
+    top:-16px;
+    filter:blur(1px);
+    animation:steamRise 1.3s ease-in infinite;
+  }
+  .target::before{ left:16px; animation-delay:0.3s; }
+  .target::after{ left:32px; }
+  @keyframes steamRise{
+    0%{ transform:translateY(0) scaleY(0.6); opacity:0; }
+    30%{ opacity:0.8; }
+    100%{ transform:translateY(-16px) scaleY(1.1); opacity:0; }
+  }
+  @keyframes flyPath{
+    0%   { bottom:-12%; transform:translateX(0); opacity:1; }
+    20%  { transform:translateX(34px); }
+    40%  { transform:translateX(-34px); }
+    60%  { transform:translateX(28px); }
+    80%  { transform:translateX(-20px); }
+    100% { bottom:104%; transform:translateX(0); opacity:1; }
+  }
+  .target.hit{
+    animation:none !important;
+    transition:transform 0.5s ease-in, opacity 0.5s ease-in;
+    transform:translateY(70px) rotate(220deg) scale(0.7);
+    opacity:0;
+    pointer-events:none;
+  }
+  .target.doomed{ filter:grayscale(0.6) brightness(0.85); }
+
+  .popText{
+    position:absolute;
+    font-weight:800;
+    font-size:0.95rem;
+    color:#fff;
+    text-shadow:0 2px 4px rgba(0,0,0,0.4);
+    pointer-events:none;
+    animation:popFloat 0.8s ease-out forwards;
+    z-index:6;
+  }
+  @keyframes popFloat{
+    0%{ opacity:1; transform:translateY(0); }
+    100%{ opacity:0; transform:translateY(-40px); }
+  }
+
+  /* ---------- Reticle ---------- */
+  #reticle{
+    position:absolute;
+    width:36px; height:36px;
+    margin-left:-18px; margin-top:-18px;
+    pointer-events:none;
+    z-index:10;
+    display:none;
+  }
+  #reticle::before, #reticle::after{
+    content:"";
+    position:absolute;
+    background:rgba(255,255,255,0.9);
+  }
+  #reticle::before{ left:50%; top:0; width:2px; height:100%; margin-left:-1px; }
+  #reticle::after{ top:50%; left:0; height:2px; width:100%; margin-top:-1px; }
+  #reticleRing{
+    position:absolute; inset:4px;
+    border:2px solid #ff5d7a;
+    border-radius:50%;
+  }
+  #reticle.fire #reticleRing{ transform:scale(0.7); transition:transform 0.08s; }
+  #reticleRing{ transition:transform 0.15s; }
+
+  #roundBanner{
+    position:absolute;
+    top:14px; left:50%;
+    transform:translate(-50%,-10px);
+    background:rgba(11,16,38,0.85);
+    color:#fff;
+    font-weight:800;
+    font-size:1.1rem;
+    padding:8px 18px;
+    border-radius:10px;
+    opacity:0;
+    transition:opacity 0.3s, transform 0.3s;
+    z-index:8;
+    pointer-events:none;
+  }
+  #roundBanner.show{ opacity:1; transform:translate(-50%,0); }
+
+  footer{ text-align:center; color:var(--muted); font-size:0.75rem; margin-top:14px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>⚗️ Element Blitz</h1>
-    <p>Match the element to its chemical symbol before the clock runs out.</p>
+    <h1>🌭 Hot Dog Hunt</h1>
+    <p>Duck Hunt, but with hot dogs — and a very good, very hungry dog.</p>
   </header>
 
   <div class="panel">
 
     <!-- Start Screen -->
     <div id="startScreen">
-      <p>You'll see an element name and 4 possible symbols. Pick the right one as fast as you can — the quicker you answer, the more points you earn. Miss a symbol or run out of time and your streak resets.</p>
+      <p>Hot dogs are flying off the grill! Aim your reticle and click to shoot them down before they sail away. You get 3 bullets per wave — miss them all and the dog will never let you live it down. Land every shot in a wave for a bonus, and he gets to eat every one you hit.</p>
       <p><strong>Best score: <span id="bestScoreDisplay">0</span></strong></p>
-      <button class="big-btn" id="startBtn">Start Game</button>
+      <button class="big-btn" id="startBtn">Start Hunting</button>
     </div>
 
     <!-- Game Screen -->
@@ -214,29 +331,31 @@
           <div class="value" id="scoreValue">0</div>
         </div>
         <div class="stat">
-          <div class="label">Streak</div>
-          <div class="value" id="streakValue">0</div>
+          <div class="label">Round</div>
+          <div class="value" id="roundValue">1 / 6</div>
         </div>
         <div class="stat">
-          <div class="label">Round</div>
-          <div class="value" id="roundValue">1 / 10</div>
+          <div class="label">Ammo</div>
+          <div class="value" id="ammoDots">••• </div>
         </div>
       </div>
 
-      <div id="timerBarOuter"><div id="timerBar"></div></div>
-
-      <div class="question-card">
-        <div class="kicker">Which symbol matches this element?</div>
-        <div id="elementName">—</div>
+      <div id="field">
+        <div class="cloud" id="cloud1"></div>
+        <div class="cloud" id="cloud2"></div>
+        <div id="grass"></div>
+        <div id="dogArea">
+          <div id="bubble"></div>
+          <div id="dog">🐶</div>
+        </div>
+        <div id="roundBanner"></div>
+        <div id="reticle"><div id="reticleRing"></div></div>
       </div>
-
-      <div class="options" id="optionsGrid"></div>
-      <div id="feedback"></div>
     </div>
 
     <!-- End Screen -->
     <div id="endScreen" class="hidden">
-      <h2 id="endTitle">Round Complete!</h2>
+      <h2 id="endTitle">Hunt Complete!</h2>
       <p id="endSummary"></p>
       <button class="big-btn" id="restartBtn">Play Again</button>
     </div>
@@ -248,22 +367,15 @@
 
 <script>
 (function(){
-  const ELEMENTS = [
-    ["Hydrogen","H"],["Helium","He"],["Lithium","Li"],["Beryllium","Be"],
-    ["Boron","B"],["Carbon","C"],["Nitrogen","N"],["Oxygen","O"],
-    ["Fluorine","F"],["Neon","Ne"],["Sodium","Na"],["Magnesium","Mg"],
-    ["Aluminium","Al"],["Silicon","Si"],["Phosphorus","P"],["Sulfur","S"],
-    ["Chlorine","Cl"],["Argon","Ar"],["Potassium","K"],["Calcium","Ca"],
-    ["Iron","Fe"],["Copper","Cu"],["Zinc","Zn"],["Silver","Ag"],
-    ["Tin","Sn"],["Iodine","I"],["Gold","Au"],["Mercury","Hg"],
-    ["Lead","Pb"],["Titanium","Ti"],["Nickel","Ni"],["Manganese","Mn"],
-    ["Chromium","Cr"],["Bromine","Br"],["Xenon","Xe"],["Platinum","Pt"],
-    ["Barium","Ba"],["Cobalt","Co"],["Uranium","U"],["Radon","Rn"]
+  const HOTDOGS = [
+    ["Classic Dog","🌭","#ffb347"],["Chili Dog","🌭","#ff6b4a"],["Cheese Dog","🌭","#ffd93d"],
+    ["Chicago Dog","🌭","#8bc34a"],["Corn Dog","🌭","#f4c542"],["Bacon Dog","🌭","#c97b4a"],
+    ["Veggie Dog","🌭","#7ed957"],["Footlong","🌭","#ff8a5b"],["Mustard Dog","🌭","#ffe066"],
+    ["Ketchup Dog","🌭","#ff5d5d"]
   ];
 
-  const TOTAL_ROUNDS = 10;
-  const ROUND_TIME = 6000; // ms
-  const BEST_KEY = "elementBlitzBestScore";
+  const TOTAL_ROUNDS = 6;
+  const BEST_KEY = "hotDogHuntBestScore";
 
   const startScreen = document.getElementById("startScreen");
   const gameScreen = document.getElementById("gameScreen");
@@ -271,140 +383,225 @@
   const startBtn = document.getElementById("startBtn");
   const restartBtn = document.getElementById("restartBtn");
   const scoreValue = document.getElementById("scoreValue");
-  const streakValue = document.getElementById("streakValue");
   const roundValue = document.getElementById("roundValue");
-  const elementNameEl = document.getElementById("elementName");
-  const optionsGrid = document.getElementById("optionsGrid");
-  const timerBar = document.getElementById("timerBar");
-  const feedback = document.getElementById("feedback");
+  const ammoDots = document.getElementById("ammoDots");
+  const field = document.getElementById("field");
+  const dog = document.getElementById("dog");
+  const bubble = document.getElementById("bubble");
+  const roundBanner = document.getElementById("roundBanner");
+  const reticle = document.getElementById("reticle");
   const endTitle = document.getElementById("endTitle");
   const endSummary = document.getElementById("endSummary");
   const bestScoreDisplay = document.getElementById("bestScoreDisplay");
 
-  let score = 0;
-  let streak = 0;
-  let round = 0;
-  let deck = [];
-  let timerStart = 0;
-  let timerRAF = null;
-  let locked = false;
+  let score = 0, round = 0, ammo = 3;
+  let activeInWave = 0, waveHits = 0;
+  let timers = [];
+  let audioCtx = null;
 
   bestScoreDisplay.textContent = localStorage.getItem(BEST_KEY) || 0;
 
-  function shuffle(arr){
-    const a = arr.slice();
-    for(let i=a.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [a[i],a[j]] = [a[j],a[i]];
-    }
-    return a;
+  function beep(freq, duration, type, vol){
+    try{
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type || "square";
+      osc.frequency.value = freq;
+      gain.gain.value = vol || 0.05;
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.stop(audioCtx.currentTime + duration);
+    }catch(e){ /* audio not available, ignore */ }
   }
+  const sfx = {
+    shoot: () => beep(1200, 0.05, "square", 0.04),
+    hit: () => { beep(880, 0.08, "square", 0.05); setTimeout(()=>beep(1320,0.1,"square",0.05),60); },
+    miss: () => beep(140, 0.15, "sawtooth", 0.05),
+    escape: () => beep(220, 0.1, "triangle", 0.03)
+  };
 
-  function buildDeck(){
-    deck = shuffle(ELEMENTS).slice(0, TOTAL_ROUNDS);
+  function clearTimers(){
+    timers.forEach(t => clearTimeout(t));
+    timers = [];
   }
+  function after(ms, fn){ const id = setTimeout(fn, ms); timers.push(id); return id; }
 
-  function buildOptions(correct){
-    const others = shuffle(ELEMENTS.filter(e => e[1] !== correct[1])).slice(0,3);
-    return shuffle([correct, ...others]);
-  }
-
-  function startGame(){
-    score = 0; streak = 0; round = 0;
-    buildDeck();
-    startScreen.classList.add("hidden");
-    endScreen.classList.add("hidden");
-    gameScreen.classList.remove("hidden");
-    updateStats();
-    nextRound();
-  }
-
-  function updateStats(){
+  function updateHUD(){
     scoreValue.textContent = score;
-    streakValue.textContent = streak;
     roundValue.textContent = Math.min(round, TOTAL_ROUNDS) + " / " + TOTAL_ROUNDS;
+    let dots = "";
+    for(let i=0;i<3;i++){
+      dots += i < ammo ? "●" : "<span class=\"spent\">●</span>";
+      if(i<2) dots += " ";
+    }
+    ammoDots.innerHTML = dots;
   }
+
+  function showBanner(text){
+    roundBanner.textContent = text;
+    roundBanner.classList.add("show");
+    after(1100, () => roundBanner.classList.remove("show"));
+  }
+
+  function showBubble(text){
+    bubble.textContent = text;
+    bubble.classList.add("show");
+    after(1300, () => bubble.classList.remove("show"));
+  }
+
+  function moveReticle(e){
+    const rect = field.getBoundingClientRect();
+    const x = (e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX)) - rect.left;
+    const y = (e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0].clientY)) - rect.top;
+    reticle.style.left = x + "px";
+    reticle.style.top = y + "px";
+    reticle.style.display = "block";
+  }
+
+  function fireRecoil(){
+    reticle.classList.add("fire");
+    after(90, () => reticle.classList.remove("fire"));
+  }
+
+  function spawnPopText(x, y, text, color){
+    const p = document.createElement("div");
+    p.className = "popText";
+    p.style.left = x + "px";
+    p.style.top = y + "px";
+    p.style.color = color || "#fff";
+    p.textContent = text;
+    field.appendChild(p);
+    after(820, () => p.remove());
+  }
+
+  function resolveWaveTargetDone(){
+    activeInWave--;
+    if(activeInWave <= 0){
+      after(300, wrapUpWave);
+    }
+  }
+
+  function spawnTarget(speedSec){
+    const [name, emoji, color] = HOTDOGS[Math.floor(Math.random()*HOTDOGS.length)];
+    const el = document.createElement("div");
+    el.className = "target";
+    el.textContent = emoji;
+    el.title = name;
+    el.style.background = "radial-gradient(circle at 35% 30%, #fff, " + color + " 60%)";
+    const leftPct = 10 + Math.random()*75;
+    el.style.left = leftPct + "%";
+    el.style.animationDuration = speedSec + "s";
+    el.dataset.resolved = "false";
+
+    el.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(el.dataset.resolved === "true") return;
+      if(ammo <= 0) return;
+      ammo--;
+      updateHUD();
+      fireRecoil();
+      el.dataset.resolved = "true";
+      const rect = el.getBoundingClientRect();
+      const fieldRect = field.getBoundingClientRect();
+      sfx.hit();
+      score += 100 + (round - 1) * 20;
+      waveHits++;
+      updateHUD();
+      spawnPopText(rect.left - fieldRect.left, rect.top - fieldRect.top, "+" + (100 + (round-1)*20), "#42e2b8");
+      el.classList.add("hit");
+      dog.classList.remove("laugh");
+      void dog.offsetWidth;
+      dog.classList.add("catch");
+      after(500, () => { el.remove(); resolveWaveTargetDone(); });
+      if(ammo === 0){
+        markRemainingDoomed();
+      }
+    });
+
+    field.appendChild(el);
+
+    function onEnd(){
+      el.removeEventListener("animationend", onEnd);
+      if(el.dataset.resolved === "true") return;
+      el.dataset.resolved = "true";
+      sfx.escape();
+      el.remove();
+      resolveWaveTargetDone();
+    }
+    el.addEventListener("animationend", onEnd);
+
+    return el;
+  }
+
+  function markRemainingDoomed(){
+    field.querySelectorAll(".target").forEach(t => {
+      if(t.dataset.resolved !== "true") t.classList.add("doomed");
+    });
+  }
+
+  function fieldMissClick(){
+    if(ammo <= 0) return;
+    ammo--;
+    updateHUD();
+    fireRecoil();
+    sfx.shoot();
+    if(ammo === 0) markRemainingDoomed();
+  }
+
+  function wrapUpWave(){
+    if(waveHits >= 2 || (waveHits > 0 && waveHits === lastWaveTargetCount)){
+      showBubble("Perfect BBQ! 🎉🌭");
+    } else if(waveHits > 0){
+      showBubble("Yum! 🐾🌭");
+    } else {
+      dog.classList.remove("catch");
+      void dog.offsetWidth;
+      dog.classList.add("laugh");
+      showBubble("Ha-ha! Missed the wiener! 😂");
+    }
+    after(1200, nextRound);
+  }
+
+  let lastWaveTargetCount = 0;
 
   function nextRound(){
     if(round >= TOTAL_ROUNDS){
       endGame();
       return;
     }
-    locked = false;
-    feedback.textContent = "";
-    const current = deck[round];
     round++;
-    updateStats();
+    ammo = 3;
+    waveHits = 0;
+    const targetCount = Math.min(1 + Math.floor((round - 1) / 2), 3);
+    lastWaveTargetCount = targetCount;
+    activeInWave = targetCount;
+    updateHUD();
+    showBanner("Round " + round);
 
-    elementNameEl.textContent = current[0];
-    const opts = buildOptions(current);
-    optionsGrid.innerHTML = "";
-    opts.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.className = "opt-btn";
-      btn.textContent = opt[1];
-      btn.addEventListener("click", () => handleAnswer(btn, opt[1] === current[1]));
-      optionsGrid.appendChild(btn);
-    });
-
-    runTimer();
+    const speedSec = Math.max(2.0, 4.6 - round * 0.35);
+    for(let i = 0; i < targetCount; i++){
+      after(500 + i * 650, () => spawnTarget(speedSec));
+    }
   }
 
-  function runTimer(){
-    cancelAnimationFrame(timerRAF);
-    timerStart = performance.now();
-    timerBar.style.background = "linear-gradient(90deg, var(--accent), var(--accent2))";
-
-    function tick(now){
-      const elapsed = now - timerStart;
-      const remaining = Math.max(0, ROUND_TIME - elapsed);
-      const pct = (remaining / ROUND_TIME) * 100;
-      timerBar.style.width = pct + "%";
-      if(pct < 25){
-        timerBar.style.background = "var(--danger)";
-      }
-      if(remaining <= 0){
-        if(!locked) handleAnswer(null, false, true);
-        return;
-      }
-      timerRAF = requestAnimationFrame(tick);
-    }
-    timerRAF = requestAnimationFrame(tick);
-  }
-
-  function handleAnswer(btn, isCorrect, timedOut){
-    if(locked) return;
-    locked = true;
-    cancelAnimationFrame(timerRAF);
-
-    const elapsed = performance.now() - timerStart;
-    const buttons = optionsGrid.querySelectorAll(".opt-btn");
-    buttons.forEach(b => b.disabled = true);
-
-    const correctIdx = deck[round-1][1];
-    buttons.forEach(b => {
-      if(b.textContent === correctIdx) b.classList.add("correct");
-    });
-
-    if(isCorrect){
-      const timeBonus = Math.max(0, Math.round((1 - elapsed/ROUND_TIME) * 50));
-      streak++;
-      const points = 50 + timeBonus + streak * 5;
-      score += points;
-      feedback.textContent = "Correct! +" + points + " pts (streak x" + streak + ")";
-      feedback.style.color = "var(--accent)";
-    } else {
-      streak = 0;
-      if(btn) btn.classList.add("wrong");
-      feedback.textContent = timedOut ? "Time's up! The answer was " + correctIdx : "Not quite — it was " + correctIdx;
-      feedback.style.color = "var(--danger)";
-    }
-
-    updateStats();
-    setTimeout(nextRound, 900);
+  function startGame(){
+    clearTimers();
+    field.querySelectorAll(".target, .popText").forEach(n => n.remove());
+    score = 0; round = 0; ammo = 3;
+    dog.classList.remove("catch","laugh");
+    bubble.classList.remove("show");
+    startScreen.classList.add("hidden");
+    endScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+    updateHUD();
+    after(400, nextRound);
   }
 
   function endGame(){
+    clearTimers();
     gameScreen.classList.add("hidden");
     endScreen.classList.remove("hidden");
 
@@ -416,9 +613,13 @@
     }
     bestScoreDisplay.textContent = localStorage.getItem(BEST_KEY);
 
-    endTitle.textContent = newBest ? "New Best Score!" : "Round Complete!";
+    endTitle.textContent = newBest ? "New Best Score! 🏆" : "Cookout Complete!";
     endSummary.innerHTML = "Final score: <strong>" + score + "</strong><br>Best score: <strong>" + localStorage.getItem(BEST_KEY) + "</strong>";
   }
+
+  field.addEventListener("mousemove", moveReticle);
+  field.addEventListener("mouseleave", () => { reticle.style.display = "none"; });
+  field.addEventListener("click", fieldMissClick);
 
   startBtn.addEventListener("click", startGame);
   restartBtn.addEventListener("click", startGame);
