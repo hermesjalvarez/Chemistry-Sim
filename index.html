@@ -12,6 +12,7 @@
     --green-2: #22c55e;
     --orange: #fab108;
     --danger: #e5484d;
+    --hawk-green: #7c9a6d;
 
     --bg: #f6f7f6;
     --panel: #ffffff;
@@ -63,15 +64,28 @@
   ::selection { background: var(--green); color: #04140b; }
 
   .badge {
-    width: 40px; height: 40px; border-radius: 10px;
-    background: linear-gradient(135deg, var(--green), var(--green-2));
-    color: #fff;
+    width: 40px; height: 40px;
+    color: var(--hawk-green);
     display: flex; align-items: center; justify-content: center;
-    font-family: Georgia, serif;
-    font-weight: 700;
-    font-size: 0.95rem;
     flex-shrink: 0;
   }
+  .badge svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+  .badge.chip {
+    background: var(--black-deep);
+    border-radius: 10px;
+    box-sizing: border-box;
+  }
+  .badge.chip svg { width: 68%; height: 68%; }
+
+  .hawk-watermark {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.07;
+    color: #fff;
+    pointer-events: none;
+  }
+  .hawk-watermark svg { width: 100%; height: 100%; display: block; fill: currentColor; }
 
   /* ---------- Header ---------- */
   header {
@@ -509,7 +523,14 @@
 
 <header>
   <a class="brand" href="#top" id="brandLink">
-    <div class="badge">SH</div>
+    <div class="badge">
+      <svg viewBox="0 0 200 190" aria-hidden="true">
+        <path d="M78,50 Q35,15 4,14 L26,48 L12,56 L32,74 L20,84 L58,96 Q68,72 78,50 Z"/>
+        <path d="M122,50 Q165,15 196,14 L174,48 L188,56 L168,74 L180,84 L142,96 Q132,72 122,50 Z"/>
+        <path d="M78,50 C62,78 58,110 66,140 L88,146 L100,180 L112,146 L134,140 C142,110 138,78 122,50 C114,64 108,68 100,66 C92,68 86,64 78,50 Z"/>
+        <path d="M100,12 C87,12 76,23 74,37 C73,44 76,51 82,54 L100,68 L118,54 C124,51 127,44 126,37 C124,23 113,12 100,12 Z"/>
+      </svg>
+    </div>
     <div>
       <h1>ScienceHawks</h1>
       <small>Free video library</small>
@@ -534,7 +555,14 @@
 <div id="authScreen">
   <div class="auth-card">
     <div class="auth-logo">
-      <div class="badge" style="width:64px;height:64px;border-radius:16px;font-size:1.3rem;">SH</div>
+      <div class="badge chip" style="width:64px;height:64px;border-radius:16px;">
+        <svg viewBox="0 0 200 190" aria-hidden="true">
+          <path d="M78,50 Q35,15 4,14 L26,48 L12,56 L32,74 L20,84 L58,96 Q68,72 78,50 Z"/>
+          <path d="M122,50 Q165,15 196,14 L174,48 L188,56 L168,74 L180,84 L142,96 Q132,72 122,50 Z"/>
+          <path d="M78,50 C62,78 58,110 66,140 L88,146 L100,180 L112,146 L134,140 C142,110 138,78 122,50 C114,64 108,68 100,66 C92,68 86,64 78,50 Z"/>
+          <path d="M100,12 C87,12 76,23 74,37 C73,44 76,51 82,54 L100,68 L118,54 C124,51 127,44 126,37 C124,23 113,12 100,12 Z"/>
+        </svg>
+      </div>
       <span>ScienceHawks</span>
     </div>
     <div class="auth-tabs">
@@ -585,6 +613,14 @@
   <section class="hero">
     <div class="hero-inner">
       <div class="hero-card">
+        <div class="hawk-watermark" aria-hidden="true">
+          <svg viewBox="0 0 200 190" preserveAspectRatio="xMidYMid slice">
+            <path d="M78,50 Q35,15 4,14 L26,48 L12,56 L32,74 L20,84 L58,96 Q68,72 78,50 Z"/>
+            <path d="M122,50 Q165,15 196,14 L174,48 L188,56 L168,74 L180,84 L142,96 Q132,72 122,50 Z"/>
+            <path d="M78,50 C62,78 58,110 66,140 L88,146 L100,180 L112,146 L134,140 C142,110 138,78 122,50 C114,64 108,68 100,66 C92,68 86,64 78,50 Z"/>
+            <path d="M100,12 C87,12 76,23 74,37 C73,44 76,51 82,54 L100,68 L118,54 C124,51 127,44 126,37 C124,23 113,12 100,12 Z"/>
+          </svg>
+        </div>
         <div class="intro-admin-row" id="introEditRow" hidden>
           <button class="btn-ghost" id="introEditBtn">Edit description</button>
         </div>
@@ -688,7 +724,14 @@
   </div>
 
   <footer class="site-footer">
-    <div class="badge" style="width:22px;height:22px;border-radius:6px;font-size:0.6rem;">SH</div>
+    <div class="badge chip" style="width:22px;height:22px;border-radius:6px;">
+      <svg viewBox="0 0 200 190" aria-hidden="true">
+        <path d="M78,50 Q35,15 4,14 L26,48 L12,56 L32,74 L20,84 L58,96 Q68,72 78,50 Z"/>
+        <path d="M122,50 Q165,15 196,14 L174,48 L188,56 L168,74 L180,84 L142,96 Q132,72 122,50 Z"/>
+        <path d="M78,50 C62,78 58,110 66,140 L88,146 L100,180 L112,146 L134,140 C142,110 138,78 122,50 C114,64 108,68 100,66 C92,68 86,64 78,50 Z"/>
+        <path d="M100,12 C87,12 76,23 74,37 C73,44 76,51 82,54 L100,68 L118,54 C124,51 127,44 126,37 C124,23 113,12 100,12 Z"/>
+      </svg>
+    </div>
     <span>ScienceHawks &mdash; free science, space &amp; physics videos for the community.</span>
   </footer>
 </main>
